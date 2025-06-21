@@ -39,7 +39,7 @@ public class SocialMediaController {
 
     @PostMapping("register")
     public  ResponseEntity<Account> createUser(@RequestBody Account account) {  
-        if (accountService.getAccount(account.getUsername()) != null)
+        if (accountService.getAccountByUsername(account.getUsername()) != null)
             return ResponseEntity.status(409).build();
         else if (account.getUsername() == "" || account.getPassword().length() < 4)
             return ResponseEntity.status(400).build();
@@ -49,10 +49,10 @@ public class SocialMediaController {
 
     @PostMapping("login")
     public ResponseEntity<Account> login(@RequestBody Account account) {
-        Optional<Account> user = accountService.verifyAccount(account.getUsername(), account.getPassword());
+        Account user = accountService.verifyAccount(account.getUsername(), account.getPassword());
 
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get());
+        if (user != null) {
+            return ResponseEntity.ok(user);
         }
 
         return ResponseEntity.status(401).build();
@@ -60,10 +60,15 @@ public class SocialMediaController {
 
     @PostMapping("messages")
     public ResponseEntity<Message> createMessage(@RequestBody Message message) {
-        if (accountService.getAccountById(message.getPostedBy()) == null|| message.getMessageText().length() > 255 || message.getMessageText().length() == 0)
+        if (accountService.getAccountById(message.getPostedBy()) == null || message.getMessageText().length() > 255 || message.getMessageText().length() == 0)
             return ResponseEntity.status(400).build();
         
         return ResponseEntity.ok(messageService.persistMessage(message));
+    }
+
+    @GetMapping("messages")
+    public ResponseEntity<List<Message>> getAllMessages() {
+        return ResponseEntity.ok(messageService.getAllMessages());
     }
 
     @GetMapping("messages/{messageId}")
@@ -71,7 +76,7 @@ public class SocialMediaController {
         Message message = messageService.getMessageById(messageId);
         return message == null ? ResponseEntity.status(200).build() : ResponseEntity.ok(message);
     }
-    
+
     @DeleteMapping("messages/{messageId}")
     public ResponseEntity<Integer> deleteSpecificMessage(@PathVariable Integer messageId) {
         int deletedRow = messageService.deleteMessageById(messageId);
@@ -89,11 +94,4 @@ public class SocialMediaController {
     public ResponseEntity<List<Message>> getAllAccountMessages(@PathVariable Integer accountId) {
         return ResponseEntity.ok(messageService.getAllMessagesByPostedBy(accountId));
     }
-
-    @GetMapping("messages")
-    public ResponseEntity<List<Message>> getAllMessages() {
-        return ResponseEntity.ok(messageService.getAllMessages());
-    }
-
-    
 }

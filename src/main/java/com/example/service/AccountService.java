@@ -22,18 +22,6 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    public Optional<Account> verifyAccount(String username, String password) {
-       return accountRepository.findByUsernameAndPassword(username, password);
-    }
-
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
-    }
-
-    public Account getAccount(String username) {
-        return accountRepository.findByUsername(username);
-    }
-
     public Account getAccountById(Integer id) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
 
@@ -43,10 +31,21 @@ public class AccountService {
         return null;
     }
 
-    public void deleteAccount(Integer id) {
-        accountRepository.deleteById(id);
+    public Account getAccountByUsername(String username) {
+        Optional<Account> optionalAccount = accountRepository.findByUsername(username);
+        return optionalAccount.isPresent() ? optionalAccount.get() : null;
     }
 
+    public List<Account> getAllAccounts() {
+        return accountRepository.findAll();
+    }
+
+
+    public Account verifyAccount(String username, String password) {
+        Optional<Account> optionalAccount = accountRepository.findByUsernameAndPassword(username, password);
+        return optionalAccount.isPresent() ? optionalAccount.get() : null;
+    }
+    
     public Account updateAccount(Integer id, Account updatedAccount) {
         Optional<Account> optionalAccount = accountRepository.findById(id);
 
@@ -59,6 +58,7 @@ public class AccountService {
         return null;
     }
 
-
-
+    public void deleteAccountById(Integer id) {
+        accountRepository.deleteById(id);
+    }
 }

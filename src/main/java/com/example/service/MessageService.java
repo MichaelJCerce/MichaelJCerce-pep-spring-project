@@ -21,15 +21,7 @@ public class MessageService {
     public Message persistMessage(Message message) {
         return messageRepository.save(message);
     }
-
-    public List<Message> getAllMessages() {
-        return messageRepository.findAll();
-    }
-    public List<Message> getAllMessagesByPostedBy(Integer postedBy) {
-        Optional<List<Message>> messages = messageRepository.findByPostedBy(postedBy);
-        return messages.get();
-    }
-
+    
     public Message getMessageById(Integer id) {
         Optional<Message> message = messageRepository.findById(id);
         if (message.isPresent())
@@ -37,16 +29,16 @@ public class MessageService {
         return null;
     }
 
-    public Integer deleteMessageById(Integer id) {
-        Optional<Message> message = messageRepository.findById(id);
-        if (message.isPresent()) {
-            messageRepository.deleteById(id);
-            return 1;
-        }   
-        return 0;
+    public List<Message> getAllMessages() {
+        return messageRepository.findAll();
     }
 
-    public Integer updateMessageById(Integer id, Message updatedMessage) {
+    public List<Message> getAllMessagesByPostedBy(Integer postedBy) {
+        Optional<List<Message>> messages = messageRepository.findByPostedBy(postedBy);
+        return messages.get();
+    }
+    
+    public int updateMessageById(Integer id, Message updatedMessage) {
         Optional<Message> optionalMessage = messageRepository.findById(id);
         if (optionalMessage.isPresent()) {
             Message message = optionalMessage.get();
@@ -57,4 +49,12 @@ public class MessageService {
         return 0;
     }
 
+    public int deleteMessageById(Integer id) {
+        Optional<Message> message = messageRepository.findById(id);
+        if (message.isPresent()) {
+            messageRepository.deleteById(id);
+            return 1;
+        }   
+        return 0;
+    }
 }
